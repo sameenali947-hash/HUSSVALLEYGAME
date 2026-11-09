@@ -33,6 +33,33 @@ select{font:inherit;background:#222;color:#fff;border:3px solid #000;padding:6px
 input{font:inherit;background:#222;color:#fff;border:3px solid #000;padding:6px;text-align:center;max-width:150px}
 .row{display:flex;align-items:center;gap:10px;background:#0006;padding:8px 10px;width:100%;box-sizing:border-box;text-align:left;justify-content:space-between}.row small{display:block;color:#cbbfa8}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,#0000 55%,#0006 100%)}
+/* Rush Coin icon + marketplace shop */
+.rc{display:inline-block;width:1.05em;height:1.05em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3a0,#f5b301 70%);border:2px solid #b97d00;vertical-align:-.18em;box-sizing:border-box;position:relative}
+.rc::after{content:'R';position:absolute;inset:0;text-align:center;font-size:.62em;line-height:1.55;color:#8a5a00;font-weight:900;text-shadow:none}
+#shop{background:none;flex-direction:row;align-items:stretch;justify-content:flex-start;gap:0;padding:0;overflow:hidden;text-align:left}
+.sl{width:min(600px,100%);background:#111216;overflow:auto;padding:14px 18px 90px;box-sizing:border-box}
+.sr{flex:1;position:relative}
+.tabs{display:flex;gap:6px;justify-content:center;margin-bottom:10px}
+.tb{background:none;border:0;color:#b9bdc9;font:inherit;font-size:18px;padding:8px 18px;border-radius:10px;cursor:pointer}.tb.on{background:#34363f;color:#fff}
+.cats{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid #2a2c35}
+.cat{background:none;border:0;border-bottom:3px solid transparent;color:#9aa0b0;font:inherit;font-size:16px;padding:8px 12px;cursor:pointer;white-space:nowrap}.cat.on{color:#fff;border-color:#fff}
+.sqi{width:100%;box-sizing:border-box;max-width:none;margin:12px 0 0;text-align:left;border-radius:10px;background:#1c1e26;border:1px solid #2f3240;padding:10px 12px}
+.sh{font-size:24px;margin:18px 0 10px}
+.hr{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}.gr{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.cd{width:132px;flex:0 0 132px;cursor:pointer;border-radius:12px;padding:5px;box-sizing:border-box}.cd:hover{background:#1a1c24}.cd.sel{outline:3px solid #5a8cff}
+.cd b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}.cd small{display:block;color:#9aa0b0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pr{margin-top:3px;font-size:15px}
+.th{width:100%;aspect-ratio:1;background:linear-gradient(#3b3e4b,#2a2c37);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:44px}
+.tf{width:56%;aspect-ratio:1;border-radius:14px;position:relative}.tf i{position:absolute;top:36%;width:10%;height:14%;background:#111;border-radius:2px}.tf i:nth-child(1){left:28%}.tf i:nth-child(2){right:28%}.tf b{position:absolute;left:32%;right:32%;bottom:24%;height:8%;margin:0;border-bottom:3px solid #111;border-radius:0 0 12px 12px}
+.ts{width:60%;height:54%;border-radius:8px}.tp{width:20%;height:60%;border-radius:4px}
+.tag{background:#2a2c37;border-radius:6px;padding:1px 6px;font-size:13px}.tag.g{background:#2f9e44}
+.em{color:#9aa0b0}
+.pill{position:absolute;top:14px;right:14px;background:#111216;border-radius:999px;padding:10px 18px;font-size:20px;display:flex;align-items:center;gap:6px}
+.bk{position:absolute;top:14px;left:14px}
+.ur{position:absolute;left:14px;top:80px;display:flex;flex-direction:column;gap:10px}
+.ib{width:46px;height:46px;border-radius:50%;background:#111216;border:0;color:#fff;font-size:22px;cursor:pointer}
+.sbar{position:absolute;left:12px;right:12px;bottom:14px;background:#111216ee;border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sbar small{display:block;color:#9aa0b0}
+@media(max-width:700px){.sr{position:absolute;inset:0;pointer-events:none}.sr>*{pointer-events:auto}.sl{padding-bottom:110px}}
 </style>
 </head>
 <body>
@@ -70,7 +97,7 @@ const ABIL={
  decoy:{n:'Inflatable Decoy',role:'Runner',price:500,cd:25,dur:8,d:'A balloon double that Imposters chase.'},
  trap:{n:'Bear Trap',role:'Chaser',price:450,cd:18,dur:20,d:'Freezes a Survivor who steps on it.'}
 };
-
+ 
 // ---------- three.js setup ----------
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -86,7 +113,7 @@ function resize(){renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth
 addEventListener('resize',resize);resize();
 const mapG=new THREE.Group(),entG=new THREE.Group(),pvG=new THREE.Group(),pvC=new THREE.Group(),foodG=new THREE.Group(),propG=new THREE.Group();scene.add(mapG,entG,pvG,foodG,propG);pvG.add(pvC);pvG.position.set(-100,0,-100);
 function dispose(g,geo){g.traverse(o=>{if(geo&&o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}});while(g.children.length)g.remove(g.children[0])}
-
+ 
 // ---------- Maps ----------
 function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const MAPS=[
@@ -140,7 +167,7 @@ function buildMap(m){
  for(const z of slow)box(z[2]*S,.1,z[3]*S,mm(m.pud),(z[0]+z[2]/2)*S,.06,(z[1]+z[3]/2)*S);
  for(const w of walls)item(w);
 }
-
+ 
 // ---------- Blocky characters ----------
 const GC={},bg=(w,h,d)=>GC[w+','+h+','+d]||(GC[w+','+h+','+d]=new THREE.BoxGeometry(w,h,d));
 const G={sh:new THREE.SphereGeometry(1.6,12,8),ring:new THREE.RingGeometry(1.05,1.35,28).rotateX(-Math.PI/2)};
@@ -152,33 +179,35 @@ function makeChar(e,av,parent){
  const skin=M(AV.skin[av.skin][0]),shirt=M(AV.shirt[av.shirt][0]),pants=M(AV.pants[av.pants][0]),dark=M(0x111111),mats=[skin,shirt,pants,dark];
  const g=new THREE.Group();
  const part=(geo,mat,x,y,z,oy)=>{const m=new THREE.Mesh(geo,mat);m.position.y=oy||0;m.castShadow=true;const p=new THREE.Group();p.position.set(x,y,z);p.add(m);g.add(p);return p};
- const L=bg(.38,1,.38);
- e.legL=part(L,pants,-.2,1,0,-.5);e.legR=part(L,pants,.2,1,0,-.5);
- part(bg(.8,1,.4),shirt,0,1.5,0);
- e.armL=part(L,shirt,-.6,1.95,0,-.5);e.armR=part(L,shirt,.6,1.95,0,-.5);
- const head=part(bg(.8,.8,.8),skin,0,2.4,0);
- for(const s of[-1,1]){const eye=new THREE.Mesh(bg(.14,.14,.05),dark);eye.position.set(s*.18,.05,.41);head.add(eye)}
+ const L=bg(.55,1.1,.55); // classic blocky proportions: arms and legs half as wide as the torso
+ e.legL=part(L,pants,-.275,1.1,0,-.55);e.legR=part(L,pants,.275,1.1,0,-.55);
+ part(bg(1.1,1.1,.55),shirt,0,1.65,0);
+ e.armL=part(L,shirt,-.825,2.15,0,-.55);e.armR=part(L,shirt,.825,2.15,0,-.55);
+ const head=part(GC.head||(GC.head=new THREE.CylinderGeometry(.4,.4,.62,18)),skin,0,2.5,0);
+ for(const sd of[-1,1]){const eye=new THREE.Mesh(bg(.1,.14,.05),dark);eye.position.set(sd*.15,.08,.39);head.add(eye)} // friendly face
+ for(const q of[[-.17,-.09],[-.07,-.15],[.07,-.15],[.17,-.09]]){const sm=new THREE.Mesh(bg(.1,.05,.05),dark);sm.position.set(q[0],q[1],.39);head.add(sm)}
  if(av.hat){const hm=M(HATC[av.hat]);mats.push(hm);
   const hb=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(bg(w,h,d),hm);m.position.set(x,y,z);head.add(m)};
-  if(av.hat==1){hb(.9,.2,.9,0,.45,0);hb(.9,.06,.4,0,.37,.5)}
-  else if(av.hat==2){hb(.85,.25,.85,0,.5,0);for(const a of[-.3,.3])for(const b of[-.3,.3])hb(.15,.2,.15,a,.72,b)}
-  else if(av.hat==3){hb(1.2,.08,1.2,0,.42,0);hb(.7,.5,.7,0,.7,0);hb(.35,.5,.35,0,1.1,0)}
-  else if(av.hat==5){hb(1,.08,.14,0,1,.45);hb(1,.08,.14,0,1,-.45);hb(.14,.08,1,.45,1,0);hb(.14,.08,1,-.45,1,0)}
-  else{hb(.86,.2,.86,0,.45,0);hb(.86,.7,.2,0,.05,-.42)}}
+  if(av.hat==1){hb(.86,.2,.86,0,.38,0);hb(.86,.06,.42,0,.3,.5)}
+  else if(av.hat==2){hb(.82,.24,.82,0,.42,0);for(const a of[-.3,.3])for(const b of[-.3,.3])hb(.15,.2,.15,a,.64,b)}
+  else if(av.hat==3){hb(1.2,.08,1.2,0,.34,0);hb(.7,.5,.7,0,.62,0);hb(.35,.5,.35,0,1.02,0)}
+  else if(av.hat==5){hb(1,.08,.14,0,.9,.45);hb(1,.08,.14,0,.9,-.45);hb(.14,.08,1,.45,.9,0);hb(.14,.08,1,-.45,.9,0)}
+  else{hb(.84,.2,.84,0,.38,0);hb(.84,.7,.2,0,0,-.4)}}
  e.lab=label(e.name);g.add(e.lab);
  e.emC=document.createElement('canvas');e.emC.width=e.emC.height=64;
  e.emS=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(e.emC),transparent:true}));e.emS.scale.set(1.6,1.6,1);e.emS.position.y=4.3;e.emS.visible=false;g.add(e.emS);
  const rm=new THREE.MeshBasicMaterial({color:0x2dff6a,transparent:true,side:THREE.DoubleSide});mats.push(rm);
  e.ring=new THREE.Mesh(G.ring,rm);e.ring.position.y=.06;g.add(e.ring);
  e.shield=new THREE.Mesh(G.sh,new THREE.MeshBasicMaterial({color:0x6fd3ff,transparent:true,opacity:.25}));e.shield.position.y=1.4;e.shield.visible=false;g.add(e.shield);
- e.sword=new THREE.Mesh(bg(.15,.15,1.8),new THREE.MeshLambertMaterial({color:0xdde6ff,emissive:0x6688aa}));e.sword.position.set(0,-.9,.9);e.sword.visible=false;e.armR.add(e.sword);
+ e.sword=new THREE.Mesh(bg(.15,.15,1.8),new THREE.MeshLambertMaterial({color:0xdde6ff,emissive:0x6688aa}));e.sword.position.set(0,-1,.9);e.sword.visible=false;e.armR.add(e.sword);
  e.flame=new THREE.Mesh(bg(.5,.5,.5),new THREE.MeshBasicMaterial({color:0xffa500}));e.flame.position.set(0,.3,-.5);e.flame.visible=false;g.add(e.flame);
  e.mats=mats;e.g=g;e.ph=0;e.fa=0;(parent||entG).add(g)}
 function randAv(){const r=n=>Math.floor(Math.random()*n);return{skin:r(4),shirt:r(3),pants:r(2),hat:r(3)?0:4}}
 {const p=new THREE.Mesh(new THREE.BoxGeometry(5,1,5),new THREE.MeshLambertMaterial({map:tex(['#5fae4f','#569f48','#4e9342'],11)}));p.material.map.repeat.set(5,5);p.position.y=-.5;pvG.add(p)}
-let pv=null;
-function showPreview(){dispose(pvC,false);const e={name:''};makeChar(e,save.av,pvC);pv=e.g}
-
+let pv=null,shopOn=false,PAS=null,sTab='mk',sCat='all',sq='',sel=null,tryAv=null,hist=[],redo=[],sMsg='',cardList=[];
+const PASTEL=()=>PAS||(PAS=skyTex(0xe6c9ff));
+function showPreview(av){dispose(pvC,false);const e={name:''};makeChar(e,av||save.av,pvC);pv=e.g}
+ 
 // ---------- Game state ----------
 const RT=120,HS=5,HCS=0.92;
 // chs = bot imposter speed (1 = same as survivors), vis = how far bot imposters see, n = number of imposters, stun = freeze after being tagged
@@ -200,7 +229,7 @@ function blocked(x,y,r){
 function freeSpot(sp=true,x0=40,x1=W-40){for(let i=0;i<300;i++){const x=x0+Math.random()*(x1-x0),y=40+Math.random()*(H-80);if(!blocked(x,y,22)&&(!sp||ents.every(e=>Math.hypot(e.x-x,e.y-y)>70)))return{x,y}}return{x:W/2,y:H/2}}
 const NAMES=['Ace','Bolt','Cleo','Dash','Echo','Finn','Gus'],pick=a=>a[Math.floor(Math.random()*a.length)];
 function mkEnt(name,av,x,y,role,human){return{x,y,tx:x,ty:y,r:14,spd:human?170:D().spd,human:!!human,remote:false,name,av,role,ck:0,sh:0,rk:0,dg:0,sp:0,cd:0,imm:0,tcd:0,stun:0,safe:0,side:0,ds:0,dc:0,em:0,emt:0,emc:0,tags:0,cakes:0,stuck:0,wx:0,wy:0,wt:0,dec:0,dx:0,dy:0,vx:0,vy:0,fa:0,mvd:false,in:null,pref:.8+Math.random()*.4,eqs:null}}
-const BEAM=new THREE.CylinderGeometry(.5,.5,9,8,1,true),FN=['Apple! Speed boost','Bread! One-hit shield','Cake! +20 bonus Coins'];
+const BEAM=new THREE.CylinderGeometry(.5,.5,9,8,1,true),FN=['Apple! Speed boost','Bread! One-hit shield','Cake! +20 bonus Rush Coins'];
 let ZG=null;
 function makeZone(){const c=0x37ff8b;ZG=ZG||[new THREE.BoxGeometry(ZONE[2]*S,.15,ZONE[3]*S),new THREE.BoxGeometry(ZONE[2]*S,9,ZONE[3]*S)];
  const pad=new THREE.Mesh(ZG[0],new THREE.MeshLambertMaterial({color:c,emissive:c,emissiveIntensity:.5,transparent:true,opacity:.8})),
@@ -280,11 +309,11 @@ function startRound(){
 function finish(rw){
  state='end';$('cd').style.display='none';
  if(net.mode=='host')bc({t:'end',rw,tg:ents.map(e=>e.tags),ck:ents.map(e=>e.cakes),r:ents.map(e=>e.role=='Chaser'?1:0),sf:ents.map(e=>e.safe?1:0)});
- let c=10,g=0;if(P.role=='Runner'&&rw){c+=50;g+=1}if(P.role=='Chaser'&&!rw)c+=30;if(P.safe){c+=60;g+=2}c+=P.tags*15+P.cakes*20;
+ let c=10,g=0;if(P.role=='Runner'&&rw){c+=75;g+=1}if(P.role=='Chaser'&&!rw)c+=60;if(P.safe){c+=60;g+=2}c+=P.tags*15+P.cakes*20;
  save.coins+=c;save.gems+=g;persist();
- showMenu((MODE=='bull'?(rw?'Last runner standing: '+((ents.find(e=>e.role=='Runner')||{}).name||'?')+'!':'The bulls caught everyone!'):(rw?'Survivors win!':'Imposters win!'))+' You earned '+c+' Coins'+(g?' and '+g+' Gem'+(g>1?'s':''):'')+'.');
+ showMenu(((P.role=='Runner'&&rw)||(P.role=='Chaser'&&!rw)?'YOU WIN! ':'')+(MODE=='bull'?(rw?'Last runner standing: '+((ents.find(e=>e.role=='Runner')||{}).name||'?')+'!':'The bulls caught everyone!'):(rw?'Survivors win!':'Imposters win!'))+' You earned '+c+' Rush Coins'+(g?' and '+g+' Gem'+(g>1?'s':''):'')+'.');
 }
-
+ 
 // ---------- Online play (host runs the game, friends join with a code) ----------
 const bc=m=>{if(net.conns)for(const c of net.conns)if(c.open)c.send(m)};
 const cleanAv=a=>{const o={};for(const k in AV)o[k]=Math.max(0,Math.min(AV[k].length-1,(a&&+a[k])|0));return o};
@@ -340,11 +369,11 @@ function netTick(dt){
   f:foods.map(f=>f.a?1:0).join(''),w:wave,p:props.map(p=>[p.id,p.k,Math.round(p.x),Math.round(p.y),+p.fa.toFixed(2)])});
  else if(net.mode=='client'){const[fw,rt]=inputVec();net.hostConn.send({t:'in',fw,rt,yaw})}
 }
-
+ 
 function showMenu(msg){
- state='menu';$('hud').style.display=$('ab').style.display=$('dh').style.display=$('cam').style.display=$('cd').style.display=$('sb').style.display=$('shop').style.display='none';
+ state='menu';shopOn=false;$('hud').style.display=$('ab').style.display=$('dh').style.display=$('cam').style.display=$('cd').style.display=$('sb').style.display=$('shop').style.display='none';
  const m=$('menu');m.style.display='flex';
- let h='<h1>VALLEY CHASE</h1><div class="panel"><p>'+(msg||'')+'</p><p>Coins: <b>'+save.coins+'</b> &nbsp; Gems: <b>'+save.gems+'</b></p><p>Difficulty: <select id="df" onchange="save.diff=this.value;persist()">'+Object.keys(DIFF).map(k=>'<option'+(save.diff==k?' selected':'')+'>'+k+'</option>').join('')+'</select></p><p>Mode: <select id="md" onchange="save.mode=this.value;persist()"><option value="tag"'+(save.mode!='escape'&&save.mode!='bull'?' selected':'')+'>Classic Tag</option><option value="escape"'+(save.mode=='escape'?' selected':'')+'>Escape Run</option><option value="bull"'+(save.mode=='bull'?' selected':'')+'>Bull Rush</option></select></p><p>Food on the map: <select id="fd" onchange="save.food=this.value==\'on\';persist()"><option value="on"'+(save.food!==false?' selected':'')+'>On</option><option value="off"'+(save.food===false?' selected':'')+'>Off</option></select></p><p>Name: <input id="nm" maxlength="12" value="'+save.name+'" onchange="save.name=this.value.trim().slice(0,12)||\'Player\';persist()"></p>';
+ let h='<h1>VALLEY CHASE</h1><div class="panel"><p>'+(msg||'')+'</p><p><span class="rc"></span> Rush Coins: <b>'+save.coins+'</b> &nbsp; Gems: <b>'+save.gems+'</b></p><p>Difficulty: <select id="df" onchange="save.diff=this.value;persist()">'+Object.keys(DIFF).map(k=>'<option'+(save.diff==k?' selected':'')+'>'+k+'</option>').join('')+'</select></p><p>Mode: <select id="md" onchange="save.mode=this.value;persist()"><option value="tag"'+(save.mode!='escape'&&save.mode!='bull'?' selected':'')+'>Classic Tag</option><option value="escape"'+(save.mode=='escape'?' selected':'')+'>Escape Run</option><option value="bull"'+(save.mode=='bull'?' selected':'')+'>Bull Rush</option></select></p><p>Food on the map: <select id="fd" onchange="save.food=this.value==\'on\';persist()"><option value="on"'+(save.food!==false?' selected':'')+'>On</option><option value="off"'+(save.food===false?' selected':'')+'>Off</option></select></p><p>Name: <input id="nm" maxlength="12" value="'+save.name+'" onchange="save.name=this.value.trim().slice(0,12)||\'Player\';persist()"></p>';
  if(net.mode=='solo')h+='<button class="b g" onclick="startRound()">Play solo vs bots</button><button class="b" onclick="hostGame()">Host online game</button><p><input id="jc" maxlength="4" placeholder="CODE" size="5"> <button class="b" onclick="joinGame($(\'jc\').value)">Join</button></p>';
  else{h+='<p>Room code: <b>'+net.code+'</b></p><p>Players: '+(net.names||[save.name]).join(', ')+'</p>';
   h+=net.mode=='host'?'<button class="b g" onclick="startRound()">Start round</button>':'<p>Waiting for the host to start...</p>';
@@ -352,22 +381,69 @@ function showMenu(msg){
  m.innerHTML=h+'<button class="b" onclick="dailySpin()">Daily free spin</button><p><input id="cc" maxlength="12" placeholder="REWARD CODE" size="10"> <button class="b" onclick="redeem($(\'cc\').value)">Redeem</button></p><button class="b" onclick="openShop(0)">Shop</button><button class="b m" onclick="showHelp(0)">How to play</button></div>';
  showPreview();
 }
+const AVN={skin:['Sandy','Peach','Bronze','Cocoa','Mint Green','Frost Blue'],shirt:['Sky Tee','Ruby Tee','Sunny Tee','Violet Hoodie','Teal Hoodie','Midnight Jacket','Pink Hoodie','Gold Jacket'],pants:['Denim','Slate','Plum','Cargo Brown','Teal Jeans','Gold Pants'],hat:['No Hat','Racer Cap','Royal Crown','Wizard Hat','Messy Hair','Halo']};
+const ICON={cloak:'&#128123;',shield:'&#128737;',rocket:'&#128640;',dagger:'&#128481;',horn:'&#128226;',door:'&#128682;',decoy:'&#127880;',trap:'&#129700;'},HICON=['&#128683;','&#129506;','&#128081;','&#128302;','&#128135;','&#128519;'];
+const CATS=[['all','All'],['skin','Skin'],['shirt','Shirts'],['pants','Pants'],['hat','Hats'],['ab','Abilities']];
+function catalog(){const L=[];
+ for(const c of['skin','shirt','pants','hat'])AV[c].forEach((o,i)=>L.push({t:'av',c,i,name:AVN[c][i],by:'Valley Studio',cat:c,price:o[1],gem:o[2]||0}));
+ for(const id in ABIL){const a=ABIL[id];L.push({t:'ab',id,name:a.n,by:RN[a.role]+' ability',cat:'ab',price:a.price,gem:0})}
+ return L}
+const isOwned=it=>it.t=='av'?(!it.price&&!it.gem)||save.avOwned.includes(it.c+it.i):save.owned.includes(it.id);
+const isEq=it=>it.t=='av'?save.av[it.c]==it.i:save.eq[ABIL[it.id].role]==it.id;
+const sameIt=(a,b)=>a&&b&&a.t==b.t&&a.c==b.c&&a.i==b.i&&a.id==b.id;
+function thumb(it){
+ if(it.t=='ab')return `<div class="th">${ICON[it.id]}</div>`;
+ const col=AV[it.c][it.i][0];
+ if(it.c=='skin')return `<div class="th"><div class="tf" style="background:${col}"><i></i><i></i><b></b></div></div>`;
+ if(it.c=='shirt')return `<div class="th"><div class="ts" style="background:${col}"></div></div>`;
+ if(it.c=='pants')return `<div class="th"><div class="tp" style="background:${col}"></div><div class="tp" style="background:${col}"></div></div>`;
+ return `<div class="th">${HICON[it.i]}</div>`}
+const priceHTML=it=>isEq(it)?'<span class="tag g">Equipped</span>':isOwned(it)?'<span class="tag">Owned</span>':it.gem?'&#128142; '+it.gem:it.price?'<span class="rc"></span> '+it.price:'Free';
+function renderHead(){
+ $('shead').innerHTML=`<div class="tabs"><button class="tb${sTab=='mk'?' on':''}" onclick="setTab('mk')">Marketplace</button><button class="tb${sTab=='cu'?' on':''}" onclick="setTab('cu')">Customize</button></div>`+
+  `<div class="cats">${CATS.map(c=>`<button class="cat${sCat==c[0]?' on':''}" onclick="setCat('${c[0]}')">${c[1]}</button>`).join('')}</div>`}
+function renderShopList(){
+ const q=sq.trim().toLowerCase();
+ const L=catalog().filter(it=>(sCat=='all'||it.cat==sCat)&&(!q||it.name.toLowerCase().includes(q))&&(sTab=='mk'||isOwned(it)));
+ cardList=[];
+ const card=it=>{cardList.push(it);return `<div class="cd${sameIt(sel,it)?' sel':''}" onclick="shPick(${cardList.length-1})">${thumb(it)}<b>${it.name}</b><small>${it.by}</small><div class="pr">${priceHTML(it)}</div></div>`};
+ let h='';
+ if(sCat=='all'&&!q&&sTab=='mk'){
+  const un=L.filter(it=>!isOwned(it)).sort((a,b)=>(a.price+a.gem*100)-(b.price+b.gem*100));
+  const sec=(t,arr)=>arr.length?`<div class="sh">${t}</div><div class="hr">${arr.map(card).join('')}</div>`:'';
+  h=sec('Recommended For You',un.slice(0,8))+sec('Trending Items',un.slice().reverse().slice(0,8))+sec('Just For You',L)}
+ else h=L.length?`<div class="gr">${L.map(card).join('')}</div>`:'<p class="em">Nothing here yet.</p>';
+ $('slist').innerHTML=h}
+function renderBar(){const it=sel,b=$('sbar');
+ if(!it){b.innerHTML='<span class="em">Tap an item to try it on.</span>';return}
+ const act=isEq(it)?'<button class="b m" disabled>Equipped</button>':isOwned(it)?'<button class="b g" onclick="shopAct()">Equip</button>':`<button class="b g" onclick="shopAct()">Buy ${it.gem?'&#128142; '+it.gem:'<span class="rc"></span> '+it.price}</button>`;
+ b.innerHTML=`<div><b>${it.name}</b><small>${it.by}${sMsg?' &middot; '+sMsg:''}</small></div>${act}`}
+function renderPill(){$('spill').innerHTML='<span class="rc"></span> '+save.coins.toLocaleString()+' &nbsp; &#128142; '+save.gems}
+function setTab(t){sTab=t;renderHead();renderShopList()}
+function setCat(c){sCat=c;renderHead();renderShopList()}
+function shPick(i){const it=cardList[i];if(!it)return;const sel0=sel;sel=it;sMsg='';
+ if(it.t=='av'){hist.push({av:tryAv?Object.assign({},tryAv):null,sel:sel0});redo=[];tryAv=Object.assign({},tryAv||save.av);tryAv[it.c]=it.i;showPreview(tryAv)}
+ if(sTab=='cu'){shopAct();return}
+ renderShopList();renderBar()}
+function shopAct(){const it=sel;if(!it)return;
+ if(it.t=='av'){const o=AV[it.c][it.i],k=it.c+it.i;
+  if(!isOwned(it)){
+   if(o[2]){if(save.gems<o[2]){sMsg='Not enough Gems.';renderBar();return}save.gems-=o[2]}
+   else{if(save.coins<o[1]){sMsg='Not enough Rush Coins.';renderBar();return}save.coins-=o[1]}
+   save.avOwned.push(k)}
+  save.av[it.c]=it.i;tryAv=null;hist=[];redo=[]}
+ else{const a=ABIL[it.id];
+  if(!isOwned(it)){if(save.coins<a.price){sMsg='Not enough Rush Coins.';renderBar();return}save.coins-=a.price;save.owned.push(it.id)}
+  save.eq[a.role]=it.id}
+ sMsg='Equipped!';persist();showPreview();renderShopList();renderBar();renderPill()}
+function shUndo(){if(!hist.length)return;redo.push({av:tryAv,sel});const h=hist.pop();tryAv=h.av;sel=h.sel;sMsg='';showPreview(tryAv);renderShopList();renderBar()}
+function shRedo(){if(!redo.length)return;hist.push({av:tryAv,sel});const h=redo.pop();tryAv=h.av;sel=h.sel;sMsg='';showPreview(tryAv);renderShopList();renderBar()}
 function openShop(tab){
- state='menu';$('menu').style.display='none';const s=$('shop');s.style.display='flex';
- let h='<div class="panel"><h1>Shop</h1><p>Coins: <b>'+save.coins+'</b> &nbsp; Gems: <b>'+save.gems+'</b></p><div><button class="b'+(tab?' m':' g')+'" onclick="openShop(0)">Avatar</button> <button class="b'+(tab?' g':' m')+'" onclick="openShop(1)">Abilities</button></div>';
- if(!tab){for(const c in AV){h+='<p>'+c.toUpperCase()+'</p><div class="sws">';
-  AV[c].forEach((o,i)=>{const own=(!o[1]&&!o[2])||save.avOwned.includes(c+i);
-   h+='<div class="sw'+(save.av[c]==i?' on':'')+'" style="background:'+(c=='hat'?'#555':o[0])+'" onclick="avPick(\''+c+'\','+i+')">'+(c=='hat'?o[0]:'')+(own?'':'<small>'+(o[2]?o[2]+' gems':o[1])+'</small>')+'</div>'});
-  h+='</div>'}}
- else for(const id in ABIL){const a=ABIL[id],own=save.owned.includes(id),eq=save.eq[a.role]==id;
-  h+='<div class="row"><div><b>'+a.n+'</b> ('+RN[a.role]+')<small>'+a.d+' Cooldown '+a.cd+'s</small></div><button class="b '+(eq?'m':own?'g':'')+'" onclick="act(\''+id+'\')">'+(eq?'Equipped':own?'Equip':'Buy '+a.price)+'</button></div>'}
- s.innerHTML=h+'<button class="b m" onclick="closeShop()">Back</button></div>';showPreview();
-}
-function avPick(c,i){const o=AV[c][i],k=c+i;
- if((o[1]||o[2])&&!save.avOwned.includes(k)){if(o[2]){if(save.gems<o[2])return;save.gems-=o[2]}else{if(save.coins<o[1])return;save.coins-=o[1]}save.avOwned.push(k)}
- save.av[c]=i;persist();openShop(0)}
-function act(id){const a=ABIL[id];if(!save.owned.includes(id)){if(save.coins<a.price)return;save.coins-=a.price;save.owned.push(id)}save.eq[a.role]=id;persist();openShop(1)}
-function closeShop(){$('shop').style.display='none';showMenu('Welcome back!')}
+ state='menu';shopOn=true;$('menu').style.display='none';const s=$('shop');s.style.display='flex';
+ sTab='mk';sCat=tab==1?'ab':'all';sq='';sel=null;tryAv=null;hist=[];redo=[];sMsg='';
+ s.innerHTML='<div class="sl"><div id="shead"></div><input id="sqi" class="sqi" placeholder="Search items" oninput="sq=this.value;renderShopList()"><div id="slist"></div></div><div class="sr"><button class="b m bk" onclick="closeShop()">Back</button><div class="pill" id="spill"></div><div class="ur"><button class="ib" onclick="shUndo()">&#8630;</button><button class="ib" onclick="shRedo()">&#8631;</button></div><div class="sbar" id="sbar"></div></div>';
+ renderHead();renderShopList();renderBar();renderPill();showPreview()}
+function closeShop(){shopOn=false;$('shop').style.display='none';showMenu('Welcome back!')}
 const HELP=[
  ['Goal','Imposters wear a RED circle. Survivors wear a GREEN circle, which means they have not been tagged. Imposters tag Survivors, and a tagged Survivor becomes an Imposter. Survivors win if anyone is still green after 2 minutes.'],
  ['Move and look','W A S D to move. Drag the mouse to turn the camera, or use the arrow keys. On a phone, use the left half of the screen as a joystick and drag the right half to look around.'],
@@ -375,10 +451,10 @@ const HELP=[
  ['Abilities','Press E (or tap the round button) to use your ability, SPACE to dash and G to emote. Survivors can buy Cloak, One Hit Shield, Air Horn, Door Slam and Inflatable Decoy. Imposters can buy Rocket Shoes, Big Dagger and Bear Trap.'],
  ['Escape Run','Pick Escape Run on the main menu. Survivors start on the left and must reach the glowing green safe zone on the right. Imposters start in the middle. Survivors who get there turn gold and cannot be tagged.'],
  ['Bull Rush','Pick Bull Rush on the main menu. Everyone starts on the left safe line. When the countdown ends, run across the open field to the safe line on the other side. Bulls cannot enter the safe lines, but they tag anyone caught in the open. Tagged runners become bulls, and anyone who does not cross in time is caught too. Keep crossing back and forth until one runner is left.'],
- ['Food','Collect food on the map. Apple = speed boost. Bread = a one-hit shield. Cake = 20 bonus Coins at the end of the round. Food comes back after a while.'],
- ['Coins and Gems','Surviving a round earns Coins and Gems; reaching the safe zone earns extra. Gems buy golden avatar items and the Halo hat in the Shop. Press Daily free spin once every 24 hours, and type reward codes in the box.'],
+ ['Food','Collect food on the map. Apple = speed boost. Bread = a one-hit shield. Cake = 20 bonus Rush Coins at the end of the round. Food comes back after a while.'],
+ ['Rush Coins and Gems','Surviving a round earns Rush Coins and Gems; reaching the safe zone earns extra. Gems buy golden avatar items and the Halo hat in the Shop. Press Daily free spin once every 24 hours, and type reward codes in the box.'],
  ['Multiplayer','Press Host online game to get a 4-letter room code. Friends open this same page, type the code and press Join. The host presses Start, and empty spots are filled by smart bots.'],
- ['Your avatar','Open the Shop and choose Avatar to change your skin, shirt, pants and hat. You earn Coins every round you play.']
+ ['Your avatar','Open the Shop and choose Avatar to change your skin, shirt, pants and hat. You earn Rush Coins every round you play.']
 ];
 function showHelp(i){const h=$('help'),t=HELP[i];h.style.display='flex';
  h.innerHTML='<h1>'+t[0]+'</h1><div class="panel"><p>'+t[1]+'</p><p>'+(i+1)+' / '+HELP.length+'</p><div>'+(i?'<button class="b m" onclick="showHelp('+(i-1)+')">Back</button> ':'')+(i<HELP.length-1?'<button class="b g" onclick="showHelp('+(i+1)+')">Next</button>':'<button class="b g" onclick="closeHelp()">Let’s play!</button>')+'</div></div>'}
@@ -421,15 +497,15 @@ function emote(e){if(!e||state=='menu')return;
 function dailySpin(){const left=86400000-(Date.now()-save.spin);
  if(left>0){showMenu('Your next free spin is in '+Math.ceil(left/3600000)+' hour(s).');return}
  if(Math.random()<.2){const g=pick([2,3,5]);save.spin=Date.now();save.gems+=g;persist();showMenu('Daily spin: you won '+g+' Gems!');return}
- const r=pick([50,50,75,100,100,150,200,300,500]);save.spin=Date.now();save.coins+=r;persist();showMenu('Daily spin: you won '+r+' Coins!')}
+ const r=pick([50,50,75,100,100,150,200,300,500]);save.spin=Date.now();save.coins+=r;persist();showMenu('Daily spin: you won '+r+' Rush Coins!')}
 const CODES={WELCOME:150,FOODIE:100,VALLEY:200,CHASE:100},GCODES={SPARKLE:5,SHINY:3};
 function redeem(c){c=(c||'').trim().toUpperCase();
  if(GCODES[c]){if(save.codes.includes(c)){showMenu('You already used that code.');return}save.codes.push(c);save.gems+=GCODES[c];persist();showMenu('Code accepted! +'+GCODES[c]+' Gems.');return}
  if(!CODES[c]){showMenu('That code is not valid.');return}
  if(save.codes.includes(c)){showMenu('You already used that code.');return}
- save.codes.push(c);save.coins+=CODES[c];persist();showMenu('Code accepted! +'+CODES[c]+' Coins.')}
+ save.codes.push(c);save.coins+=CODES[c];persist();showMenu('Code accepted! +'+CODES[c]+' Rush Coins.')}
 $('ab').addEventListener('click',()=>useAb(P));$('dh').addEventListener('click',()=>dash(P));
-
+ 
 // ---------- Input ----------
 const keys={};let joy=null,look=null,jv={x:0,y:0},yaw=0,pitch=.5,view=2,drag=false;
 const VIEWS=['1st person','2nd person','3rd person'];
@@ -448,7 +524,7 @@ cv.addEventListener('touchmove',e=>{for(const t of e.changedTouches){
  if(joy&&t.identifier==joy.id){const dx=t.clientX-joy.x,dy=t.clientY-joy.y,m=Math.hypot(dx,dy),k=Math.min(m,60)/60;jv=m>6?{x:dx/m*k,y:dy/m*k}:{x:0,y:0}}
  else if(look&&t.identifier==look.id){yaw-=(t.clientX-look.x)*.008;pitch=Math.max(-.5,Math.min(1.2,pitch+(t.clientY-look.y)*.006));look.x=t.clientX;look.y=t.clientY}}e.preventDefault()},{passive:false});
 cv.addEventListener('touchend',e=>{for(const t of e.changedTouches){if(joy&&t.identifier==joy.id){joy=null;jv={x:0,y:0}}if(look&&t.identifier==look.id)look=null}});
-
+ 
 // ---------- Simulation ----------
 function dirFrom(fw,rt,y){const m=Math.hypot(fw,rt),k=m>1?1/m:1,sn=Math.sin(y),cs=Math.cos(y);return[(-sn*fw+cs*rt)*k,(-cs*fw-sn*rt)*k]}
 const inputVec=()=>[(keys.KeyW?1:0)-(keys.KeyS?1:0)-jv.y,(keys.KeyD?1:0)-(keys.KeyA?1:0)+jv.x];
@@ -530,13 +606,13 @@ function update(dt){
  if(MODE=='bull'){if(!left||timer<=0)bullWave();return}
  if(!left||timer<=0)finish(MODE=='escape'?esc>0:left>0);
 }
-
+ 
 // ---------- Rendering ----------
 const SKY=new THREE.Color(0x87ceeb),tv=new THREE.Vector3(),CL=(v,a,b)=>Math.max(a,Math.min(b,v));
 function sync(dt,now){
  yaw+=((keys.ArrowLeft?1:0)-(keys.ArrowRight?1:0))*dt*2.2;pitch=CL(pitch+((keys.ArrowDown?1:0)-(keys.ArrowUp?1:0))*dt*1.5,-.5,1.2);
  const menu=state=='menu';mapG.visible=entG.visible=foodG.visible=propG.visible=!menu;pvG.visible=menu;
- if(menu){scene.background=SKY;scene.fog=null;hemi.intensity=.85;sun.intensity=.85;sun.color.setHex(0xffffff);if(pv)pv.rotation.y+=dt*.8;cam.position.set(-98.2,2.6,-94.6);cam.lookAt(-98.2,1.5,-100);return}
+ if(menu){scene.background=shopOn?PASTEL():SKY;scene.fog=null;hemi.intensity=.85;sun.intensity=.85;sun.color.setHex(0xffffff);if(pv)pv.rotation.y+=dt*.8;(()=>{const cx=shopOn?-101.7:-98.2;cam.position.set(cx,2.6,-94.6);cam.lookAt(cx,1.5,-100)})();return}
  for(const e of ents){
   if(net.mode=='client'){const k=Math.min(1,dt*14);e.x+=(e.tx-e.x)*k;e.y+=(e.ty-e.y)*k}
   e.g.position.set(e.x*S,0,e.y*S);e.g.rotation.y=e.fa;e.g.visible=!(e==P&&view==0);
@@ -579,3 +655,4 @@ requestAnimationFrame(loop);
 </script>
 </body>
 </html>
+ 
